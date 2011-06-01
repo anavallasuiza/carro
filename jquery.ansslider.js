@@ -1,5 +1,5 @@
 /**
-* ansSlider jQuery plugin - v.0.2 - http://idc.anavallasuiza.com/ansslider/
+* ansSlider jQuery plugin - v.0.2 - http://idc.anavallasuiza.com/project/ansslider/
 *
 * ansSlider is released under the GNU Affero GPL version 3
 *
@@ -30,10 +30,10 @@
 		}
 	};
 
-	$.fn.ansSlider = function(method) {
+	$.fn.ansSlider = function (method) {
 
 		var methods = {
-			init : function(options) {
+			init : function (options) {
 				var common_settings = $.extend({}, this.ansSlider.defaults, options);
 
 				return this.each(function() {
@@ -44,7 +44,7 @@
 
 					settings.$slides = $('> *', this).each(function (index) {
 						$(this).attr('rel', index).css('float', 'left');
-						w += $(this).width() + parseInt($(this).css('margin-left')) + parseInt($(this).css('margin-right'));
+						w += $(this).outerWidth(true);
 					});
 
 					//Create html tree
