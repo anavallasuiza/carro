@@ -107,10 +107,12 @@
 					//Buttons
 					if (settings.buttons) {
 						if ($.isFunction(settings.buttons)) {
-							settings.buttons = $.proxy(settings.buttons, $element)();
+							settings.$buttons = $.proxy(settings.buttons, $element)();
+						} else {
+							settings.$buttons = $(settings.buttons);
 						}
 
-						$(settings.buttons).click(function () {
+						settings.$buttons.click(function () {
 							$element.ansSlider('goto', $(this).attr('data-anssliderindex'));
 							return false;
 						});
@@ -134,14 +136,14 @@
 						settings.$tray.delay(settings.delay).animate({
 							'left': (($target.position().left * -1) + settings.offset) + 'px'
 						}, settings.duration, settings.easing, function () {
-							if (settings.buttons) {
-								$(settings.buttons).removeClass('selected').filter('[data-anssliderindex=' + $target.attr('data-anssliderindex') + ']').addClass('selected');
+							if (settings.$buttons) {
+								settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + $target.attr('data-anssliderindex') + ']').addClass('selected');
 							}
+
+							settings.index = parseInt($target.attr('data-anssliderindex'), 10);
 
 							$element.trigger('ansliderChange', [$target]);
 						});
-
-						settings.index = parseInt($target.attr('data-anssliderindex'), 10);
 					}
 				});
 			},
