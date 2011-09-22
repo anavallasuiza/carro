@@ -134,7 +134,7 @@
 						$element.trigger('ansliderBeforeChange', [$target]);
 
 						settings.$tray.delay(settings.delay).animate({
-							'left': (($target.position().left * -1) + settings.offset) + 'px'
+							'left': (($target.position().left * -1) + settings.offset - parseInt($target.css('marginLeft'), 10)) + 'px'
 						}, settings.duration, settings.easing, function () {
 							if (settings.$buttons) {
 								settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + $target.attr('data-anssliderindex') + ']').addClass('selected');
