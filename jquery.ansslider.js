@@ -130,7 +130,7 @@
 						settings = $element.data('ansSlider'),
 						$target = helpers.getTarget(settings, pos);
 					
-					if ($target) {
+					if ($target && (settings.index != $target.attr('data-anssliderindex'))) {
 						$element.trigger('ansliderBeforeChange', [$target]);
 
 						settings.$tray.delay(settings.delay).animate({
