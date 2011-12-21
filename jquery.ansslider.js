@@ -1,27 +1,43 @@
 /**
-* ansSlider jQuery plugin - v.0.2.1 - http://idc.anavallasuiza.com/project/ansslider/
-*
-* ansSlider is released under the GNU Affero GPL version 3
-*
-* More information at http://www.gnu.org/licenses/agpl-3.0.html
-*/
+ * ansSlider jQuery plugin - v.0.3 - http://idc.anavallasuiza.com/project/ansslider/
+ *
+ * ansSlider is released under the GNU Affero GPL version 3
+ *
+ * More information at http://www.gnu.org/licenses/agpl-3.0.html
+ */
 (function($) {
 	
 	var helpers = {
 		getTarget: function (settings, pos) {
 			var position;
 
-			if (typeof pos == 'number' && pos < 0) {
-				position = settings.index + pos;
+			if (typeof pos === "object" && pos.jquery && pos.parent().is(settings.$tray)) {
+				position = pos.index();
+			} else if (typeof pos === "number") {
+				position = pos;
 			} else if (/^[0-9]+$/.test(pos)) {
 				position = parseInt(pos, 10);
+
+				if (position > settings.$slides.length - 1) {
+					position = settings.$slides.length - 1;
+				}
 			} else if (/^\+[0-9]+$/.test(pos)) {
 				position = settings.index + (parseInt(pos.substr(1), 10) * settings.span);
+
+				if (position > settings.$slides.length - 1) {
+					position = settings.$slides.length - 1;
+				}
 			} else if (/^\-[0-9]+$/.test(pos)) {
 				position = settings.index - (parseInt(pos.substr(1), 10) * settings.span);
+
+				if (position < 0) {
+					position = 0;
+				}
+			} else {
+				return false;
 			}
 
-			var $target = settings.$slides.filter('[data-anssliderindex=' + position + ']');
+			var $target = settings.$slides.eq(position);
 
 			if ($target.length) {
 				return $target;
@@ -42,28 +58,44 @@
 
 					//Widget events
 					if ($.isFunction(settings.beforeLoad)) {
-						$element.bind('ansliderBeforeLoad', settings.beforeLoad);
+						$element.bind('ansSliderBeforeLoad', settings.beforeLoad);
 					}
 
 					if ($.isFunction(settings.load)) {
-						$element.bind('ansliderLoad', settings.load);
+						$element.bind('ansSliderLoad', settings.load);
 					}
 
-					if ($.isFunction(settings.change)) {
-						$element.bind('ansliderChange', settings.change);
+					if ($.isFunction(settings.changeSlide)) {
+						$element.bind('ansSliderChangeSlide', settings.changeSlide);
 					}
 
-					if ($.isFunction(settings.beforeChange)) {
-						$element.bind('ansliderBeforeChange', settings.beforeChange);
+					if ($.isFunction(settings.beforeChangeSlide)) {
+						$element.bind('ansSliderBeforeChangeSlide', settings.beforeChangeSlide);
 					}
 
-					$element.trigger('ansliderBeforeLoad');
+					if ($.isFunction(settings.firstSlide)) {
+						$element.bind('ansSliderFirstSlide', settings.firstSlide);
+					}
+
+					if ($.isFunction(settings.lastSlide)) {
+						$element.bind('ansSliderLastSlide', settings.lastSlide);
+					}
+
+					if ($.isFunction(settings.loadSlide)) {
+						$element.bind('ansSliderLoadSlide', settings.loadSlide);
+					}
+
+					if ($.isFunction(settings.beforeLoadSlide)) {
+						$element.bind('ansSliderBeforeLoadSlide', settings.beforeLoadSlide);
+					}
+
+					$element.trigger('ansSliderBeforeLoad');
 
 					//$slides
 					var w = 0;
 					
-					settings.$slides = $('> ' + settings.filter, this).each(function (index) {
-						$(this).attr('data-anssliderindex', index).css({'float': 'left'});
+					settings.$slides = $('> ' + settings.filter, this).each(function () {
+						$(this).css({'float': 'left'});
 						w += $(this).outerWidth(true);
 					});
 
@@ -118,7 +150,7 @@
 						});
 					}
 
-					$element.trigger('ansliderLoad');
+					$element.trigger('ansSliderLoad');
 				});
 			},
 
@@ -126,25 +158,113 @@
 				var pos = position;
 
 				return this.each(function () {
-					var $element = $(this),
-						settings = $element.data('ansSlider'),
-						$target = helpers.getTarget(settings, pos);
-					
-					if ($target && (settings.index != $target.attr('data-anssliderindex'))) {
-						$element.trigger('ansliderBeforeChange', [$target]);
+					var $element = $(this);
+					var	settings = $element.data('ansSlider');
+					var	$target = helpers.getTarget(settings, pos);
+
+					if ($target && (settings.index != $target.index())) {
+						var target_index = $target.index();
+
+						$element.trigger('ansSliderBeforeChangeSlide', [$target]);
 
 						settings.$tray.delay(settings.delay).animate({
 							'left': (($target.position().left * -1) + settings.offset - parseInt($target.css('marginLeft'), 10)) + 'px'
 						}, settings.duration, settings.easing, function () {
 							if (settings.$buttons) {
-								settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + $target.attr('data-anssliderindex') + ']').addClass('selected');
+								settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + target_index + ']').addClass('selected');
 							}
 
-							settings.index = parseInt($target.attr('data-anssliderindex'), 10);
+							settings.index = target_index;
 
-							$element.trigger('ansliderChange', [$target]);
+							$element.trigger('ansSliderChangeSlide', [$target]);
+
+							if ($element.ansSlider('currentSliderIs', 'first')) {
+								$element.trigger('ansSliderFirstSlide', [$target]);
+							}
+
+							if ($element.ansSlider('currentSliderIs', 'last')) {
+								$element.trigger('ansSliderLastSlide', [$target]);
+							}
 						});
 					}
+				});
+			},
+
+			currentSliderIs: function (position) {
+				var settings = this.eq(0).data('ansSlider');
+
+				if (typeof position === "object" && position.jquery && position.parent().is(settings.$tray)) {
+					return (settings.index === position.index()) ? true : false;
+				}
+				if (typeof position === 'number') {
+					return (settings.index === position) ? true : false;
+				}
+				if (position === 'first') {
+					return (settings.index === 0) ? true : false;
+				}
+				if (position === 'last') {
+					return (settings.index === (settings.$slides.length - 1)) ? true : false;
+				}
+
+				return false;
+			},
+
+			getSlider: function (position) {
+				var settings = this.eq(0).data('ansSlider');
+
+				if (position == 'undefined') {
+					position = settings.index;
+				}
+
+				return helpers.getTarget(settings, position);
+			},
+
+			load: function (ajax_settings, position) {
+				if (typeof ajax_settings != 'object' || !ajax_settings.url) {
+					return this;
+				}
+
+				var pos = (position == undefined) ? -1 : position;
+				var callback = ajax_settings.success;
+				var escaped_url = ajax_settings.url.replace(/[^\w-]/, '');
+
+				return this.each(function () {
+					var $element = $(this);
+					var settings = $element.data('ansSlider');
+					var	$target = settings.$slides.filter('[data-anssliderurl="' + escaped_url + '"]');
+
+					if ($target.length) {
+						if ($.isFunction(callback)) {
+							$.proxy(callback, $element)($target);
+						}
+					}
+
+					$element.trigger('ansSliderBeforeLoadSlide', [ajax_settings, position]);
+
+					var ajax = $.extend({}, ajax_settings, {
+						success: function (html) {
+							$target = helpers.getTarget(settings, pos);
+
+							var $slide = $(html, {'data-anssliderurl': escaped_url}).css({'float': 'left'});
+
+							if (pos < 0) {
+								$slide.insertAfter($target);
+							} else {
+								$slide.insertBefore($target);
+							}
+
+							settings.$tray.width(settings.$tray.width() + $slide.outerWidth(true));
+							settings.$slides = settings.$tray.children();
+
+							if ($.isFunction(callback)) {
+								$.proxy(callback, $element)($slide);
+							}
+
+							$element.trigger('ansSliderLoadSlide', [$slide]);
+						}
+					});
+
+					$.ajax(ajax);
 				});
 			},
 
@@ -201,9 +321,14 @@
 		span: 1,
 		filter: '*',
 
-		beforeChange: false,
-		change: false,
-		beforeLoad: false,
-		load: false
+		beforeLoad: null,
+		load: null,
+
+		beforeChangeSlide: null,
+		changeSlide: null,
+		beforeLoadSlide: null,
+		loadSlide: null,
+		firstSlide: null,
+		lastSlide: null
 	};
 })(jQuery);
