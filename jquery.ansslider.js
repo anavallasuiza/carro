@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.3 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.3.1 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -56,6 +56,10 @@
 				return this.each(function() {
 					var $element = $(this), element = this, settings = $.extend({}, common_settings);
 
+					if ($element.data('ansSlider')) {
+						return;
+					}
+
 					//Widget events
 					if ($.isFunction(settings.beforeLoad)) {
 						$element.bind('ansSliderBeforeLoad', settings.beforeLoad);
@@ -101,8 +105,8 @@
 
 					//Create html tree
 					settings.$slides.wrapAll('<div><div></div></div>');
-					settings.$tray = settings.$slides.parent();
-					settings.$window = settings.$tray.parent();
+					settings.$tray = settings.$slides.parent().addClass('ansSlider-tray');
+					settings.$window = settings.$tray.parent().addClass('ansSlider-window');
 
 					//$tray css properties
 					settings.$tray.width(w).css({
