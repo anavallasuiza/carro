@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.3.1 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.3.2 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -114,19 +114,23 @@
 						'position': 'relative'
 					});
 
+					
 					//$element css properties
 					$element.css({
 						'float': 'left',
-						'width': $element.width() + 'px',
 						'position': 'relative',
 						'overflow': 'visible'
 					});
+
+					if (settings.width) {
+						$element.css('width', settings.width);
+					}
 
 					//$window css properties
 					settings.$window.css({
 						'float': 'left',
 						'overflow': 'hidden',
-						'width': settings.width,
+						'width': '100%',
 						'padding': '0',
 						'position': 'relative'
 					});
@@ -171,23 +175,44 @@
 
 						$element.trigger('ansSliderBeforeChangeSlide', [$target]);
 
+						var offset = settings.offset;
+
+						if (offset === 'center') {
+							offset = (settings.$window.width() - $target.width()) / 2;
+						}
+
+						var left = (($target.position().left * -1) + offset - parseInt($target.css('marginLeft'), 10));
+
+						if (settings.fitToLimits) {
+							if (left > 0) {
+								left = 0;
+							} else if (left < (settings.$tray.width() - settings.$window.width()) * -1) {
+								left = (settings.$tray.width() - settings.$window.width()) * -1;
+							}
+						}
+
 						settings.$tray.delay(settings.delay).animate({
-							'left': (($target.position().left * -1) + settings.offset - parseInt($target.css('marginLeft'), 10)) + 'px'
-						}, settings.duration, settings.easing, function () {
-							if (settings.$buttons) {
-								settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + target_index + ']').addClass('selected');
-							}
+							'left': left + 'px'
+						},{
+							duration: settings.duration,
+							duration: settings.easing,
+							queue: false,
+							complete: function () {
+								if (settings.$buttons) {
+									settings.$buttons.removeClass('selected').filter('[data-anssliderindex=' + target_index + ']').addClass('selected');
+								}
 
-							settings.index = target_index;
+								settings.index = target_index;
 
-							$element.trigger('ansSliderChangeSlide', [$target]);
+								$element.trigger('ansSliderChangeSlide', [$target]);
 
-							if ($element.ansSlider('currentSliderIs', 'first')) {
-								$element.trigger('ansSliderFirstSlide', [$target]);
-							}
+								if ($element.ansSlider('currentSliderIs', 'first')) {
+									$element.trigger('ansSliderFirstSlide', [$target]);
+								}
 
-							if ($element.ansSlider('currentSliderIs', 'last')) {
-								$element.trigger('ansSliderLastSlide', [$target]);
+								if ($element.ansSlider('currentSliderIs', 'last')) {
+									$element.trigger('ansSliderLastSlide', [$target]);
+								}
 							}
 						});
 					}
@@ -313,12 +338,13 @@
 	}
 
 	$.fn.ansSlider.defaults = {
-		width: '100%',
+		width: false,
 		scroll: false,
 		duration: 1000,
 		easing: 'swing',
 		interval: 5000,
 		offset: 0,
+		fitToLimits: false,
 		buttons: '',
 		index: 0,
 		delay: 0,
