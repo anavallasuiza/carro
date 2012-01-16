@@ -170,7 +170,7 @@
 					var	settings = $element.data('ansSlider');
 					var	$target = helpers.getTarget(settings, pos);
 
-					if ($target && (settings.index != $target.index())) {
+					if ($target) {
 						var target_index = $target.index();
 						var offset = settings.offset;
 
@@ -188,7 +188,7 @@
 							}
 						}
 
-						if (settings.$tray.position().left === left) {
+						if (Math.round(settings.$tray.position().left) === Math.round(left) && (settings.index === target_index)) {
 							return;
 						}
 
