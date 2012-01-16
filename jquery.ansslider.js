@@ -172,9 +172,6 @@
 
 					if ($target && (settings.index != $target.index())) {
 						var target_index = $target.index();
-
-						$element.trigger('ansSliderBeforeChangeSlide', [$target]);
-
 						var offset = settings.offset;
 
 						if (offset === 'center') {
@@ -190,6 +187,12 @@
 								left = (settings.$tray.width() - settings.$window.width()) * -1;
 							}
 						}
+
+						if (settings.$tray.position().left === left) {
+							return;
+						}
+
+						$element.trigger('ansSliderBeforeChangeSlide', [$target]);
 
 						settings.$tray.delay(settings.delay).animate({
 							'left': left + 'px'
