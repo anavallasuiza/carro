@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.3.2 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.4 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -8,8 +8,13 @@
 (function($) {
 	
 	var helpers = {
-		getTarget: function (settings, pos) {
+		getTarget: function ($element, pos) {
 			var position;
+			var settings = $element.data('ansSlider');
+
+			if (settings.$window.width() > settings.$tray.outerWidth(true)) {
+				return false;
+			}
 
 			if (typeof pos === "object" && pos.jquery && pos.parent().is(settings.$tray)) {
 				position = pos.index();
@@ -24,15 +29,22 @@
 			} else if (/^\+[0-9]+$/.test(pos)) {
 				position = settings.index + (parseInt(pos.substr(1), 10) * settings.span);
 
-				if (position > settings.$slides.length - 1) {
+				if ($element.ansSlider('slideIsVisible', 'last')) {
+					position = settings.index;
+				} else if (position > settings.$slides.length - 1) {
 					position = settings.$slides.length - 1;
 				}
+				
 			} else if (/^\-[0-9]+$/.test(pos)) {
 				position = settings.index - (parseInt(pos.substr(1), 10) * settings.span);
-
+				
 				if (position < 0) {
 					position = 0;
 				}
+			} else if (pos === 'last') {
+				position = settings.$slides.length - 1;
+			} else if (pos === 'first') {
+				position = 0;
 			} else {
 				return false;
 			}
@@ -84,7 +96,7 @@
 					if ($.isFunction(settings.lastSlide)) {
 						$element.bind('ansSliderLastSlide', settings.lastSlide);
 					}
-
+					
 					if ($.isFunction(settings.loadSlide)) {
 						$element.bind('ansSliderLoadSlide', settings.loadSlide);
 					}
@@ -159,6 +171,63 @@
 					}
 
 					$element.trigger('ansSliderLoad');
+					
+					
+					$element.bind('touchstart', function(event) {
+						
+						var changed = event.originalEvent.changedTouches;
+						
+						$(this).data('origx', changed[0].pageX);
+						$(this).data('origy', changed[0].pageY);
+					});
+					
+					$element.bind('touchmove', function(event) {
+						
+						if (!$(this).data('moving')) {
+							var changed = event.originalEvent.changedTouches;
+							var touches = event.originalEvent.touches;
+							
+							var x1 = changed[0].pageX;
+							var y1 = changed[0].pageY;
+							
+							var x2 = $(this).data('origx');
+							var y2 = $(this).data('origy');
+								
+	
+							var x3 = x2 - x1;
+							var y3 = y2 - y1;
+							
+							var theta = Math.atan2(-y3, x3);
+							if (theta < 0) {
+								theta += 2 * Math.PI;
+							}
+							
+							var grados = Math.round(theta * (180 / Math.PI));
+							
+							if (grados <= 45 || (grados >= 135 && grados <= 225) || grados > 315) {
+								
+								if (x2 !== x1) {
+									
+									var step = (x2 < x1) ? '-1' : '+1';
+									
+									$element.ansSlider('goto', step);
+									
+									$(this).data('moving', true);
+									
+									event.preventDefault();
+									event.stopPropagation();
+								}
+							}
+						}
+					});
+					
+					$element.bind('touchend', function(event) {
+						$(this).data('moving', false);
+					});
+					
+					$(window).resize(function(){
+						$element.ansSlider('goto', $element.data('ansSlider').index);
+					})
 				});
 			},
 
@@ -168,7 +237,7 @@
 				return this.each(function () {
 					var $element = $(this);
 					var	settings = $element.data('ansSlider');
-					var	$target = helpers.getTarget(settings, pos);
+					var	$target = helpers.getTarget($element, pos);
 
 					if ($target) {
 						var target_index = $target.index();
@@ -188,10 +257,6 @@
 							}
 						}
 
-						if (Math.round(settings.$tray.position().left) === Math.round(left) && (settings.index === target_index)) {
-							return;
-						}
-
 						$element.trigger('ansSliderBeforeChangeSlide', [$target]);
 
 						settings.$tray.delay(settings.delay).animate({
@@ -209,11 +274,11 @@
 
 								$element.trigger('ansSliderChangeSlide', [$target]);
 
-								if ($element.ansSlider('currentSliderIs', 'first')) {
+								if ($element.ansSlider('currentSlideIs', 'first')) {
 									$element.trigger('ansSliderFirstSlide', [$target]);
 								}
 
-								if ($element.ansSlider('currentSliderIs', 'last')) {
+								if ($element.ansSlider('currentSlideIs', 'last')) {
 									$element.trigger('ansSliderLastSlide', [$target]);
 								}
 							}
@@ -222,7 +287,7 @@
 				});
 			},
 
-			currentSliderIs: function (position) {
+			currentSlideIs: function (position) {
 				var settings = this.eq(0).data('ansSlider');
 
 				if (typeof position === "object" && position.jquery && position.parent().is(settings.$tray)) {
@@ -241,14 +306,36 @@
 				return false;
 			},
 
-			getSlider: function (position) {
+			getSlide: function (position) {
 				var settings = this.eq(0).data('ansSlider');
 
-				if (position == 'undefined') {
+				if (!position && position !== 0) {
 					position = settings.index;
 				}
 
-				return helpers.getTarget(settings, position);
+				return helpers.getTarget($(this), position);
+			},
+
+			slideIsVisible: function (position) {
+				var settings = this.eq(0).data('ansSlider');
+				var $slide = $(this).ansSlider('getSlide', position);
+
+				var slidePointLeft = Math.round($slide.position().left + settings.$tray.position().left + parseInt($slide.css('marginLeft')));
+				var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth(true));
+				var window_width = settings.$window.width();
+
+				var left_is_visible = (slidePointLeft >= 0) && slidePointLeft <= window_width;
+				var right_is_visible = (slidePointRight >= 0) && slidePointRight <= window_width;
+
+				if (left_is_visible && right_is_visible) {
+					return true;
+				}
+
+				if ((left_is_visible || right_is_visible) && window_width < $slide.outerWidth(true)) {
+					return true;
+				}
+
+				return false;
 			},
 
 			load: function (ajax_settings, position) {
@@ -275,7 +362,7 @@
 
 					var ajax = $.extend({}, ajax_settings, {
 						success: function (html) {
-							$target = helpers.getTarget(settings, pos);
+							$target = helpers.getTarget($element, pos);
 
 							var $slide = $(html, {'data-anssliderurl': escaped_url}).css({'float': 'left'});
 
@@ -307,18 +394,18 @@
 						index = '+1';
 
 					var interval = function () {
-						var $target = helpers.getTarget(settings, index);
-
-						if (!$target) {
-							index = (index == '+1') ? '-1' : '+1';
+						if ($element.ansSlider('slideIsVisible', 'last')) {
+							index = '-1';
+						} else if ($element.ansSlider('slideIsVisible', 'first')) {
+							index = '+1';
 						}
 
 						$element.ansSlider('goto', index);
 
-						settings.timeout = setTimeout(interval, parseInt(settings.interval));
+						settings.timeout = setTimeout(interval, settings.interval);
 					}
 
-					settings.timeout = setTimeout(interval, parseInt(settings.interval));
+					settings.timeout = setTimeout(interval, settings.interval);
 				});
 			},
 
