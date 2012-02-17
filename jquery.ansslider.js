@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.4 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.4.1 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -321,7 +321,7 @@
 				var $slide = $(this).ansSlider('getSlide', position);
 
 				var slidePointLeft = Math.round($slide.position().left + settings.$tray.position().left + parseInt($slide.css('marginLeft')));
-				var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth(true));
+				var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth());
 				var window_width = settings.$window.width();
 
 				var left_is_visible = (slidePointLeft >= 0) && slidePointLeft <= window_width;
