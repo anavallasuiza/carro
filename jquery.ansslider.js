@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.4.1 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.4.2 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -324,14 +324,7 @@
 				var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth());
 				var window_width = settings.$window.width();
 
-				var left_is_visible = (slidePointLeft >= 0) && slidePointLeft <= window_width;
-				var right_is_visible = (slidePointRight >= 0) && slidePointRight <= window_width;
-
-				if (left_is_visible && right_is_visible) {
-					return true;
-				}
-
-				if ((left_is_visible || right_is_visible) && window_width < $slide.outerWidth(true)) {
+				if ((slidePointLeft <= 0 && slidePointRight >= window_width) || (slidePointLeft >= 0 && slidePointLeft <= window_width && slidePointRight >= 0 && slidePointRight <= window_width)) {
 					return true;
 				}
 
