@@ -1,5 +1,5 @@
 /**
- * ansSlider jQuery plugin - v.0.4.2 - http://idc.anavallasuiza.com/project/ansslider/
+ * ansSlider jQuery plugin - v.0.4.3 - http://idc.anavallasuiza.com/project/ansslider/
  *
  * ansSlider is released under the GNU Affero GPL version 3
  *
@@ -278,7 +278,11 @@
 									$element.trigger('ansSliderFirstSlide', [$target]);
 								}
 
-								if ($element.ansSlider('currentSlideIs', 'last')) {
+								if (settings.fitToLimits) {
+									if ($element.ansSlider('slideIsVisible', 'last')) {
+										$element.trigger('ansSliderLastSlide', [$target]);
+									}
+								} else if ($element.ansSlider('currentSlideIs', 'last')) {
 									$element.trigger('ansSliderLastSlide', [$target]);
 								}
 							}
