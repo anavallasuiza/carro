@@ -6,9 +6,22 @@
 
 		<script>
 			$(document).ready(function () {
+				function notifyEvent (event) {
+					$('#events').append('<li>' + event.type + '</li>');
+				}
+
 				$('.gallery').ansSlider({
 					width: 400,
-					buttons: '.boton'
+					buttons: 'button',
+
+					beforeLoad: notifyEvent,
+					afterLoad: notifyEvent,
+					beforeChangeSlide: notifyEvent,
+					afterChangeSlide: notifyEvent,
+					beforeLoadSlide: notifyEvent,
+					afterLoadSlide: notifyEvent,
+					firstSlide: notifyEvent,
+					lastSlide: notifyEvent
 				});
 			});
 		</script>
@@ -16,32 +29,42 @@
 			.selected {
 				font-weight: bold;
 			}
+			#events {
+				clear: both;
+				padding-top: 50px;
+			}
 		</style>
 	</head>
 
 	<body>
 		<div class="gallery">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
-			<img src="http://lorempixum.com/400/200/" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
 		</div>
 
-		<span class="boton" data-anssliderindex="0">0</span>
-		<span class="boton" data-anssliderindex="1">1</span>
-		<span class="boton" data-anssliderindex="2">2</span>
-		<span class="boton" data-anssliderindex="3">3</span>
-		<span class="boton" data-anssliderindex="4">4</span>
-		<span class="boton" data-anssliderindex="5">5</span>
-		<span class="boton" data-anssliderindex="6">6</span>
+		<button data-anssliderindex="0">0</button>
+		<button data-anssliderindex="1">1</button>
+		<button data-anssliderindex="2">2</button>
+		<button data-anssliderindex="3">3</button>
+		<button data-anssliderindex="4">4</button>
+		<button data-anssliderindex="5">5</button>
+		<button data-anssliderindex="6">6</button>
+		<button data-anssliderindex="7">7</button>
+		<button data-anssliderindex="8">8</button>
+		<button data-anssliderindex="9">9</button>
 		<br>
-		<span class="boton" data-anssliderindex="+1">+1</span>
-		<span class="boton" data-anssliderindex="-1">-1</span>
+		<button data-anssliderindex="-1">-1</button>
+		<button data-anssliderindex="+1">+1</button>
+
+		<ol id="events">
+		</ol>
 	</body>
 </html>

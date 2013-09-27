@@ -17,16 +17,15 @@
 		buttons: '',
 		index: 0,
 		delay: 0,
-		span: 1,
 		filter: '*',
 
 		beforeLoad: null,
-		load: null,
+		afterLoad: null,
 
 		beforeChangeSlide: null,
-		changeSlide: null,
+		afterChangeSlide: null,
 		beforeLoadSlide: null,
-		loadSlide: null,
+		afterLoadSlide: null,
 		firstSlide: null,
 		lastSlide: null
 	};
@@ -51,16 +50,24 @@
 				this._bind('beforeLoad', this.settings.beforeLoad);
 			}
 
-			if ($.isFunction(this.settings.load)) {
-				this._bind('load', this.settings.load);
-			}
-
-			if ($.isFunction(this.settings.changeSlide)) {
-				this._bind('changeSlide', this.settings.changeSlide);
+			if ($.isFunction(this.settings.afterLoad)) {
+				this._bind('afterLoad', this.settings.afterLoad);
 			}
 
 			if ($.isFunction(this.settings.beforeChangeSlide)) {
 				this._bind('beforeChangeSlide', this.settings.beforeChangeSlide);
+			}
+
+			if ($.isFunction(this.settings.afterChangeSlide)) {
+				this._bind('afterChangeSlide', this.settings.afterChangeSlide);
+			}
+
+			if ($.isFunction(this.settings.beforeLoadSlide)) {
+				this._bind('beforeLoadSlide', this.settings.beforeLoadSlide);
+			}
+
+			if ($.isFunction(this.settings.afterLoadSlide)) {
+				this._bind('afterLoadSlide', this.settings.afterLoadSlide);
 			}
 
 			if ($.isFunction(this.settings.firstSlide)) {
@@ -69,14 +76,6 @@
 
 			if ($.isFunction(this.settings.lastSlide)) {
 				this._bind('lastSlide', this.settings.lastSlide);
-			}
-			
-			if ($.isFunction(this.settings.loadSlide)) {
-				this._bind('loadSlide', this.settings.loadSlide);
-			}
-
-			if ($.isFunction(this.settings.beforeLoadSlide)) {
-				this._bind('beforeLoadSlide', this.settings.beforeLoadSlide);
 			}
 
 			this.$element.trigger('beforeLoad');
@@ -142,7 +141,7 @@
 				});
 			}
 
-			this.$element.trigger('load');
+			this.$element.trigger('afterLoad');
 			
 			this.$element.bind('touchstart', function(event) {
 				var changed = event.originalEvent.changedTouches;
@@ -236,7 +235,7 @@
 
 						that.index = target_index;
 
-						that.$element.trigger('changeSlide', [$target]);
+						that.$element.trigger('afterChangeSlide', [$target]);
 
 						if (that.currentSlideIs('first')) {
 							that.$element.trigger('firstSlide', [$target]);
@@ -291,19 +290,21 @@
 					position = this.$slides.length - 1;
 				}
 			} else if (/^\+[0-9]+$/.test(pos)) {
-				position = this.index + (parseInt(pos.substr(1), 10) * this.settings.span);
+				position = this.index + (parseInt(pos.substr(1), 10));
+
+				if (position > this.$slides.length - 1) {
+					return undefined;
+				}
 
 				if (this.slideIsVisible('last')) {
 					position = this.index;
-				} else if (position > this.$slides.length - 1) {
-					position = this.$slides.length - 1;
 				}
 				
 			} else if (/^\-[0-9]+$/.test(pos)) {
-				position = this.index - (parseInt(pos.substr(1), 10) * this.settings.span);
+				position = this.index - (parseInt(pos.substr(1), 10));
 				
 				if (position < 0) {
-					position = 0;
+					return undefined;
 				}
 			} else if (pos === 'last') {
 				position = this.$slides.length - 1;
@@ -334,8 +335,8 @@
 
 			return false;
 		},
-		load: function (ajax_settings, position) {
-			if (typeof ajax_settings != 'object' || !ajax_settings.url) {
+		addAjaxSlide: function (ajax_settings, position) {
+			if (typeof ajax_settings !== 'object' || !ajax_settings.url) {
 				return this;
 			}
 
@@ -352,7 +353,7 @@
 				}
 			}
 
-			this.$element.trigger('beforeLoadSlide', [ajax_settings, position]);
+			this.$element.trigger('beforeLoadSlide', [ajax_settings, pos]);
 
 			var ajax = $.extend({}, ajax_settings, {
 				success: function (html) {
@@ -373,7 +374,20 @@
 						$.proxy(callback, that.$element)($slide);
 					}
 
-					that.$element.trigger('loadSlide', [$slide]);
+					that.$element.trigger('afterLoadSlide', [$slide]);
+				}
+			});
+
+			$.ajax(ajax);
+		},
+		loadAjaxSlides: function (ajax_settings) {
+			var that = this;
+
+			var ajax = $.extend({}, ajax_settings, {
+				success: function (html) {
+					that.destroy(html);
+					that.$element.html(html);
+					that.init();
 				}
 			});
 
@@ -400,6 +414,15 @@
 
 		stop: function () {
 			clearTimeout(this.timeout);
+		},
+
+		destroy: function () {
+			this.$element.off('.' + pluginName);
+			this.$element.html(this.$slides);
+
+			if (this.$buttons) {
+				this.$buttons.off('.' + pluginName);
+			}
 		}
 	};
 
