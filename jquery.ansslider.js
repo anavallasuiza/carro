@@ -342,16 +342,7 @@
 
 			var that = this,
 				pos = (position === undefined) ? -1 : position,
-				callback = ajax_settings.success,
 				escaped_url = ajax_settings.url.replace(/[^\w-]/, '');
-
-			var	$target = this.$slides.filter('[data-anssliderurl="' + escaped_url + '"]');
-
-			if ($target.length) {
-				if ($.isFunction(callback)) {
-					$.proxy(callback, this.$element)($target);
-				}
-			}
 
 			this.$element.trigger('beforeLoadSlide', [ajax_settings, pos]);
 
@@ -370,15 +361,11 @@
 					that.$tray.width(that.$tray.width() + $slide.outerWidth(true));
 					that.$slides = that.$tray.children();
 
-					if ($.isFunction(callback)) {
-						$.proxy(callback, that.$element)($slide);
-					}
-
 					that.$element.trigger('afterLoadSlide', [$slide]);
 				}
 			});
 
-			$.ajax(ajax);
+			return $.ajax(ajax);
 		},
 		loadAjaxSlides: function (ajax_settings) {
 			var that = this;
@@ -391,7 +378,7 @@
 				}
 			});
 
-			$.ajax(ajax);
+			return $.ajax(ajax);
 		},
 		play: function () {
 			var that = this,
