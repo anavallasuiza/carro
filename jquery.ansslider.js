@@ -213,10 +213,12 @@
 				var left = (($target.position().left * -1) + offset - parseInt($target.css('marginLeft'), 10));
 
 				if (this.settings.fitToLimits) {
+					if (left < (this.$tray.width() - this.$window.width()) * -1) {
+						left = (this.$tray.width() - this.$window.width()) * -1;
+					}
+
 					if (left > 0) {
 						left = 0;
-					} else if (left < (this.$tray.width() - this.$window.width()) * -1) {
-						left = (this.$tray.width() - this.$window.width()) * -1;
 					}
 				}
 
