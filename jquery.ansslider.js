@@ -275,10 +275,6 @@
 				pos = this.index;
 			}
 
-			if (this.$window.width() > this.$tray.outerWidth(true)) {
-				return false;
-			}
-
 			if (typeof pos === "object" && pos.jquery && pos.parent().is(this.$tray)) {
 				position = pos.index();
 			} else if (typeof pos === "number") {
@@ -311,7 +307,7 @@
 			} else if (pos === 'first') {
 				position = 0;
 			} else {
-				return false;
+				return undefined;
 			}
 
 			var $target = this.$slides.eq(position);
@@ -320,10 +316,14 @@
 				return $target;
 			}
 
-			return false;
+			return undefined;
 		},
 		slideIsVisible: function (position) {
 			var $slide = this.getSlide(position);
+
+			if (!$slide) {
+				return false;
+			}
 
 			var slidePointLeft = Math.round($slide.position().left + this.$tray.position().left + parseInt($slide.css('marginLeft')));
 			var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth());
@@ -341,7 +341,7 @@
 			}
 
 			var that = this,
-				pos = (position === undefined) ? -1 : position,
+				pos = (position === undefined) ? 'last' : position,
 				escaped_url = ajax_settings.url.replace(/[^\w-]/, '');
 
 			this.$element.trigger('beforeLoadSlide', [ajax_settings, pos]);
