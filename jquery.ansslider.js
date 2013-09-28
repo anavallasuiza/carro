@@ -336,8 +336,8 @@
 			return false;
 		},
 		addAjaxSlide: function (ajax_settings, position) {
-			if (typeof ajax_settings !== 'object' || !ajax_settings.url) {
-				return this;
+			if (typeof ajax_settings === 'string') {
+				ajax_settings = {url: ajax_settings};
 			}
 
 			var that = this,
@@ -370,9 +370,13 @@
 		loadAjaxSlides: function (ajax_settings) {
 			var that = this;
 
+			if (typeof ajax_settings === 'string') {
+				ajax_settings = {url: ajax_settings};
+			}
+
 			var ajax = $.extend({}, ajax_settings, {
 				success: function (html) {
-					that.destroy(html);
+					that.destroy();
 					that.$element.html(html);
 					that.init();
 				}
