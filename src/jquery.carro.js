@@ -7,15 +7,15 @@
         factory(jQuery);
     }
 }(function ($) {
-    var pluginName = "ansSlider", defaults = {
+    var pluginName = "carro", defaults = {
+        autoPlay: false,
+        buttons: '',
+        fitToLimits: false,
+        index: 0,
         interval: 5000,
         offset: 0,
-        fitToLimits: false,
-        buttons: '',
-        index: 0,
-        autoPlay: false,
-        trayFilter: '*',
-        slidesFilter: '*'
+        slidesFilter: '*',
+        trayFilter: '*'
     };
 
     function Plugin (element, options) {
@@ -54,7 +54,7 @@
 
                 var that = this;
                 this.$buttons.on('click.' + pluginName, function () {
-                    that['goto']($(this).attr('data-anssliderindex'));
+                    that['goto']($(this).attr('data-carro'));
                     return false;
                 });
             }
@@ -63,57 +63,6 @@
             if (this.settings.autoPlay) {
                 this.play();
             }
-            
-            this.$element.bind('touchstart', function(event) {
-                var changed = event.originalEvent.changedTouches;
-
-                $(this).data('origx', changed[0].pageX);
-                $(this).data('origy', changed[0].pageY);
-            });
-            
-            this.$element.bind('touchmove', function(event) {
-                
-                if (!$(this).data('moving')) {
-                    var changed = event.originalEvent.changedTouches;
-                    var touches = event.originalEvent.touches;
-                    
-                    var x1 = changed[0].pageX;
-                    var y1 = changed[0].pageY;
-                    
-                    var x2 = $(this).data('origx');
-                    var y2 = $(this).data('origy');
-                        
-
-                    var x3 = x2 - x1;
-                    var y3 = y2 - y1;
-                    
-                    var theta = Math.atan2(-y3, x3);
-                    if (theta < 0) {
-                        theta += 2 * Math.PI;
-                    }
-                    
-                    var grados = Math.round(theta * (180 / Math.PI));
-                    
-                    if (grados <= 45 || (grados >= 135 && grados <= 225) || grados > 315) {
-                        
-                        if (x2 !== x1) {
-                            
-                            var step = (x2 < x1) ? '-1' : '+1';
-                            
-                            $element[pluginName]('goto', step);
-                            
-                            $(this).data('moving', true);
-                            
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                    }
-                }
-            });
-            
-            this.$element.bind('touchend', function(event) {
-                $(this).data('moving', false);
-            });
         },
 
         goto: function (position) {

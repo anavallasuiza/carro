@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<script src="src/jquery.carro.js"></script>
+
+		<script>
+			$(document).ready(function () {
+				$('.gallery')
+					.carro({
+						buttons: 'button',
+						fitToLimits: true,
+						offset: 'center',
+						enter: function () {
+							$(this).addClass('active');
+						},
+						leave: function () {
+							$(this).removeClass('active');
+						}
+					});
+			});
+		</script>
+		<style>
+			.gallery {
+				width: 100%;
+				overflow: hidden;
+			}
+			.gallery-tray {
+				display: -webkit-flex;
+				display: flex;
+				-webkit-transition: transform 1s;
+				transition: transform 1s;
+			}
+			.gallery-tray img {
+				opacity: 0.3;
+				-webkit-flex-shrink: 0;
+				flex-shrink: 0;
+			}
+			.gallery-tray img.active {
+				opacity: 1;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="gallery">
+			<div class="gallery-tray">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+				<img src="http://lorempixum.com/400/200/" alt="">
+			</div>
+		</div>
+
+		<button data-carro="0">0</button>
+		<button data-carro="1">1</button>
+		<button data-carro="2">2</button>
+		<button data-carro="3">3</button>
+		<button data-carro="4">4</button>
+		<button data-carro="5">5</button>
+		<button data-carro="6">6</button>
+		<button data-carro="7">7</button>
+		<button data-carro="8">8</button>
+		<button data-carro="9">9</button>
+		<br>
+		<button data-carro="-1">-1</button>
+		<button data-carro="+1">+1</button>
+	</body>
+</html>
