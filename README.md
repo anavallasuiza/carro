@@ -38,8 +38,7 @@ Carro is a jquery plugin to create a chromeless css-based carousel with any html
     <!-- Use Carro -->
     <script>
       $(document).ready(function () {
-        $('.gallery')
-          .carro({
+        $('.gallery').carro({
             buttons: 'button',
             fitToLimits: true,
             offset: 'center',
@@ -128,21 +127,21 @@ Carro is a jquery plugin to create a chromeless css-based carousel with any html
         <td>index</td>
         <td>0</td>
         <td>The initial slide visible</td>
-        <td>number</td>
+        <td>integer</td>
       </tr>
 
       <tr>
         <td>interval</td>
         <td>5000</td>
         <td>The interval duration on play in miliseconds</td>
-        <td>number</td>
+        <td>integer</td>
       </tr>
 
       <tr>
         <td>offset</td>
         <td>0</td>
         <td>Horizontal offset position of the tray with all slides in pixels. It can ben also "center" to center the current slide in the window</td>
-        <td>number|"center"</td>
+        <td>integer or "center"</td>
       </tr>
 
       <tr>
