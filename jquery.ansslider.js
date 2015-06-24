@@ -1,126 +1,41 @@
-/**
- * ansSlider jQuery plugin - v.1.0.0 - http://idc.anavallasuiza.com/project/ansslider/
- *
- * ansSlider is released under the GNU Affero GPL version 3
- *
- * More information at http://www.gnu.org/licenses/agpl-3.0.html
- */
-;(function ($, window, document, undefined) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
 	var pluginName = "ansSlider", defaults = {
-		width: false,
-		scroll: false,
-		duration: 1000,
-		easing: 'swing',
 		interval: 5000,
 		offset: 0,
 		fitToLimits: false,
 		buttons: '',
 		index: 0,
-		delay: 0,
-		filter: '*',
-
-		beforeLoad: null,
-		afterLoad: null,
-
-		beforeChangeSlide: null,
-		afterChangeSlide: null,
-		beforeLoadSlide: null,
-		afterLoadSlide: null,
-		firstSlide: null,
-		lastSlide: null
+		filter: '*'
 	};
 
 	function Plugin (element, options) {
 		this.element = element;
-		this.$element = $(element);
 		this.settings = $.extend({}, defaults, options);
 
 		this.init();
 	}
 
 	Plugin.prototype = {
-		_bind: function (event, callback) {
-			this.$element.on(event + '.' + pluginName, callback);
-		},
 		init: function () {
-			var that = this;
+			this.$element = $(this.element);
+			this.$tray = this.$element.children();
+			this.$slides = this.$tray.children(this.settings.filter);
 
-			//Widget events
-			if ($.isFunction(this.settings.beforeLoad)) {
-				this._bind('beforeLoad', this.settings.beforeLoad);
+			//Events
+			if (this.settings.enter) {
+				this.$slides.on('enter.' + pluginName, this.settings.enter);
 			}
 
-			if ($.isFunction(this.settings.afterLoad)) {
-				this._bind('afterLoad', this.settings.afterLoad);
-			}
-
-			if ($.isFunction(this.settings.beforeChangeSlide)) {
-				this._bind('beforeChangeSlide', this.settings.beforeChangeSlide);
-			}
-
-			if ($.isFunction(this.settings.afterChangeSlide)) {
-				this._bind('afterChangeSlide', this.settings.afterChangeSlide);
-			}
-
-			if ($.isFunction(this.settings.beforeLoadSlide)) {
-				this._bind('beforeLoadSlide', this.settings.beforeLoadSlide);
-			}
-
-			if ($.isFunction(this.settings.afterLoadSlide)) {
-				this._bind('afterLoadSlide', this.settings.afterLoadSlide);
-			}
-
-			if ($.isFunction(this.settings.firstSlide)) {
-				this._bind('firstSlide', this.settings.firstSlide);
-			}
-
-			if ($.isFunction(this.settings.lastSlide)) {
-				this._bind('lastSlide', this.settings.lastSlide);
-			}
-
-			this.$element.trigger('beforeLoad');
-
-			//$slides
-			var w = 0;
-			
-			this.$slides = $('> ' + this.settings.filter, this.$element).each(function () {
-				w += $(this).css({'float': 'left'}).outerWidth(true);
-			});
-
-			//Create html tree
-			this.$slides.wrapAll('<div><div></div></div>');
-			this.$tray = this.$slides.parent().addClass('ansSlider-tray');
-			this.$window = this.$tray.parent().addClass('ansSlider-window');
-
-			//$tray css properties
-			this.$tray.width(w).css({
-				'float': 'left',
-				'position': 'relative'
-			});
-
-			
-			//$element css properties
-			this.$element.css({
-				'float': 'left',
-				'position': 'relative',
-				'overflow': 'visible'
-			});
-
-			if (this.settings.width) {
-				this.$element.css('width', this.settings.width);
-			}
-
-			//$window css properties
-			this.$window.css({
-				'float': 'left',
-				'overflow': 'hidden',
-				'width': '100%',
-				'padding': '0',
-				'position': 'relative'
-			});
-
-			if (this.settings.scroll) {
-				this.settings.$window.css('overflow-x', 'scroll');
+			if (this.settings.leave) {
+				this.$slides.on('leave.' + pluginName, this.settings.leave);
 			}
 
 			//Go to
@@ -135,13 +50,12 @@
 					this.$buttons = $(this.settings.buttons);
 				}
 
+				var that = this;
 				this.$buttons.on('click.' + pluginName, function () {
 					that['goto']($(this).attr('data-anssliderindex'));
 					return false;
 				});
 			}
-
-			this.$element.trigger('afterLoad');
 			
 			this.$element.bind('touchstart', function(event) {
 				var changed = event.originalEvent.changedTouches;
@@ -179,7 +93,7 @@
 							
 							var step = (x2 < x1) ? '-1' : '+1';
 							
-							$element.ansSlider('goto', step);
+							$element[pluginName]('goto', step);
 							
 							$(this).data('moving', true);
 							
@@ -193,213 +107,108 @@
 			this.$element.bind('touchend', function(event) {
 				$(this).data('moving', false);
 			});
-			
-			$(window).resize(function(){
-				that['goto'](that.index);
-			});
 		},
+
 		goto: function (position) {
 			var that = this;
 			var	$target = this.getSlide(position);
 
-			if ($target) {
-				var target_index = $target.index();
-				var offset = this.settings.offset;
+			if ($target && $target.length) {
+				this.getSlide('current').trigger('leave');
 
-				if (offset === 'center') {
-					offset = (this.settings.$window.width() - $target.width()) / 2;
-				}
+				this.index = $target.index();				
+				var x = 0;
 
-				var left = (($target.position().left * -1) + offset - parseInt($target.css('marginLeft'), 10));
-
-				if (this.settings.fitToLimits) {
-					if (left < (this.$tray.width() - this.$window.width()) * -1) {
-						left = (this.$tray.width() - this.$window.width()) * -1;
-					}
-
-					if (left > 0) {
-						left = 0;
-					}
-				}
-
-				this.$element.trigger('beforeChangeSlide', [$target]);
-
-				this.$tray.delay(this.settings.delay).animate({
-					'left': left + 'px'
-				},{
-					duration: this.settings.duration,
-					easing: this.settings.easing,
-					queue: false,
-					complete: function () {
-						if (that.$buttons) {
-							that.$buttons.removeClass('selected').filter('[data-anssliderindex=' + target_index + ']').addClass('selected');
-						}
-
-						that.index = target_index;
-
-						that.$element.trigger('afterChangeSlide', [$target]);
-
-						if (that.currentSlideIs('first')) {
-							that.$element.trigger('firstSlide', [$target]);
-						}
-
-						if (that.settings.fitToLimits) {
-							if (that.slideIsVisible('last')) {
-								that.$element.trigger('lastSlide', [$target]);
-							}
-						} else if (that.currentSlideIs('last')) {
-							that.$element.trigger('lastSlide', [$target]);
-						}
-					}
+				$target.prevAll().each(function () {
+					x -= $(this).outerWidth(true);
 				});
-			}
-		},
-		currentSlideIs: function (position) {
-			if (typeof position === "object" && position.jquery && position.parent().is(this.$tray)) {
-				return (this.index === position.index()) ? true : false;
-			}
-			if (typeof position === 'number') {
-				return (this.index === position) ? true : false;
-			}
-			if (position === 'first') {
-				return (this.index === 0) ? true : false;
-			}
-			if (position === 'last') {
-				return (this.index === (this.$slides.length - 1)) ? true : false;
-			}
 
-			return false;
-		},
-		getSlide: function (pos) {
-			var position;
-
-			if (!pos && pos !== 0) {
-				pos = this.index;
-			}
-
-			if (typeof pos === "object" && pos.jquery && pos.parent().is(this.$tray)) {
-				position = pos.index();
-			} else if (typeof pos === "number") {
-				position = pos;
-			} else if (/^[0-9]+$/.test(pos)) {
-				position = parseInt(pos, 10);
-
-				if (position > this.$slides.length - 1) {
-					position = this.$slides.length - 1;
-				}
-			} else if (/^\+[0-9]+$/.test(pos)) {
-				position = this.index + (parseInt(pos.substr(1), 10));
-
-				if (position > this.$slides.length - 1) {
-					return undefined;
+				//offset
+				if (this.settings.offset === 'center') {
+					x += (this.$element.width() - $target.width()) / 2;
+				} else {
+					x += this.settings.offset || 0;
 				}
 
-				if (this.slideIsVisible('last')) {
-					position = this.index;
-				}
-				
-			} else if (/^\-[0-9]+$/.test(pos)) {
-				position = this.index - (parseInt(pos.substr(1), 10));
-				
-				if (position < 0) {
-					return undefined;
-				}
-			} else if (pos === 'last') {
-				position = this.$slides.length - 1;
-			} else if (pos === 'first') {
-				position = 0;
-			} else {
-				return undefined;
-			}
+				//fitToLimits
+				if (this.settings.fitToLimits) {
+					var lastx = this.$element.width();
 
-			var $target = this.$slides.eq(position);
+					this.getSlide('last').prevAll().addBack().each(function () {
+						lastx -= $(this).outerWidth(true);
+					});
 
-			if ($target.length) {
-				return $target;
-			}
-
-			return undefined;
-		},
-		slideIsVisible: function (position) {
-			var $slide = this.getSlide(position);
-
-			if (!$slide) {
-				return false;
-			}
-
-			var slidePointLeft = Math.round($slide.position().left + this.$tray.position().left + parseInt($slide.css('marginLeft')));
-			var slidePointRight = Math.round(slidePointLeft + $slide.outerWidth());
-			var window_width = this.$window.width();
-
-			if ((slidePointLeft <= 0 && slidePointRight >= window_width) || (slidePointLeft >= 0 && slidePointLeft <= window_width && slidePointRight >= 0 && slidePointRight <= window_width)) {
-				return true;
-			}
-
-			return false;
-		},
-		addAjaxSlide: function (ajax_settings, position) {
-			if (typeof ajax_settings === 'string') {
-				ajax_settings = {url: ajax_settings};
-			}
-
-			var that = this,
-				pos = (position === undefined) ? 'last' : position,
-				escaped_url = ajax_settings.url.replace(/[^\w-]/, '');
-
-			this.$element.trigger('beforeLoadSlide', [ajax_settings, pos]);
-
-			var ajax = $.extend({}, ajax_settings, {
-				success: function (html) {
-					$target = that.getSlide(pos);
-
-					var $slide = $(html, {'data-anssliderurl': escaped_url}).css({'float': 'left'});
-
-					if (pos < 0) {
-						$slide.insertAfter($target);
-					} else {
-						$slide.insertBefore($target);
+					if (x < lastx) {
+						x = lastx;
 					}
 
-					that.$tray.width(that.$tray.width() + $slide.outerWidth(true));
-					that.$slides = that.$tray.children();
-
-					that.$element.trigger('afterLoadSlide', [$slide]);
+					if (x > 0) {
+						x = 0;
+					}
 				}
-			});
 
-			return $.ajax(ajax);
+				$target.trigger('enter');
+
+				this.$tray.css('transform', 'translateX(' + x + 'px)');
+			}
 		},
-		loadAjaxSlides: function (ajax_settings) {
-			var that = this;
 
-			if (typeof ajax_settings === 'string') {
-				ajax_settings = {url: ajax_settings};
+		getSlides: function () {
+			return this.$slides;
+		},
+
+		getSlide: function (position) {
+			if (position === undefined || position === 'current') {
+				return this.$slides.eq(this.index);
 			}
 
-			var ajax = $.extend({}, ajax_settings, {
-				success: function (html) {
-					that.destroy();
-					that.$element.html(html);
-					that.init();
-				}
-			});
+			if (typeof position === "object" && position.jquery && position.parent().is(this.$tray)) {
+				return position;
+			}
 
-			return $.ajax(ajax);
+			if (position === 'first') {
+				return this.$slides.first();
+			}
+
+			if (position === 'last') {
+				return this.$slides.last();
+			}
+
+			if (typeof position === 'number') {
+				return this.$slides.eq(position);
+			}
+
+			if (/^[0-9]+$/.test(position)) {
+				return this.$slides.eq(parseInt(position, 10));
+			}
+
+			if (/^\+[0-9]+$/.test(position)) {
+				position = this.index + (parseInt(position.substr(1), 10));
+
+				return this.$slides.eq(position);
+			}
+
+			if (/^\-[0-9]+$/.test(position)) {
+				position = this.index - (parseInt(position.substr(1), 10));
+
+				return this.$slides.eq(position);
+			}
 		},
+
 		play: function () {
 			var that = this,
 				index = '+1';
 
 			var interval = function () {
-				if (that.slideIsVisible('last')) {
+				if (that.getSlide('last').index() === that.index) {
 					index = '-1';
-				} else if (that.slideIsVisible('first')) {
+				} else if (that.index === 0) {
 					index = '+1';
 				}
 
 				that['goto'](index);
 
-				that.timeout = setTimeout(interval, this.settings.interval);
+				that.timeout = setTimeout(interval, that.settings.interval);
 			}
 
 			this.timeout = setTimeout(interval, this.settings.interval);
@@ -410,8 +219,7 @@
 		},
 
 		destroy: function () {
-			this.$element.off('.' + pluginName);
-			this.$element.html(this.$slides);
+			this.$slides.off('.' + pluginName);
 
 			if (this.$buttons) {
 				this.$buttons.off('.' + pluginName);
@@ -446,4 +254,5 @@
 			return returns !== undefined ? returns : this;
 		}
 	};
-})(jQuery, window, document);
+
+}));

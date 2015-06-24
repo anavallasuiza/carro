@@ -6,48 +6,54 @@
 
 		<script>
 			$(document).ready(function () {
-				function notifyEvent (event) {
-					$('#events').append('<li>' + event.type + '</li>');
-				}
-
-				$('.gallery').ansSlider({
-					width: 400,
-					buttons: 'button',
-
-					beforeLoad: notifyEvent,
-					afterLoad: notifyEvent,
-					beforeChangeSlide: notifyEvent,
-					afterChangeSlide: notifyEvent,
-					beforeLoadSlide: notifyEvent,
-					afterLoadSlide: notifyEvent,
-					firstSlide: notifyEvent,
-					lastSlide: notifyEvent
-				});
+				$('.gallery')
+					.ansSlider({
+						buttons: 'button',
+						fitToLimits: true,
+						offset: 'center',
+						enter: function () {
+							$(this).addClass('active');
+						},
+						leave: function () {
+							$(this).removeClass('active');
+						}
+					});
 			});
 		</script>
 		<style>
-			.selected {
-				font-weight: bold;
+			.gallery {
+				width: 100%;
+				overflow: hidden;
 			}
-			#events {
-				clear: both;
-				padding-top: 50px;
+			.gallery-tray {
+				display: flex;
+				display: -webkit-flex;
+				transition: transform 1s;
+				-webkit-transition: transform 1s;
+			}
+			.gallery-tray img {
+				opacity: 0.3;
+			}
+			.gallery-tray img.active {
+				opacity: 1;
 			}
 		</style>
 	</head>
 
 	<body>
 		<div class="gallery">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
-			<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			<div class="gallery-tray">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+				<img src="http://lorempixum.com/400/200/" width="400" height="200" alt="">
+			</div>
 		</div>
 
 		<button data-anssliderindex="0">0</button>
@@ -63,8 +69,5 @@
 		<br>
 		<button data-anssliderindex="-1">-1</button>
 		<button data-anssliderindex="+1">+1</button>
-
-		<ol id="events">
-		</ol>
 	</body>
 </html>
