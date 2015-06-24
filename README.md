@@ -4,7 +4,7 @@ Carro is a jquery plugin to create a chromeless css-based carousel with any html
 
 ## Full example example
 
-```js
+```html
 <html>
   <head>
     <meta charset="utf-8">
