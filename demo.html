@@ -11,12 +11,8 @@
 						buttons: 'button',
 						fitToLimits: true,
 						offset: 'center',
-						enter: function () {
-							$(this).addClass('active');
-						},
-						leave: function () {
-							$(this).removeClass('active');
-						}
+						buttonActiveClass: 'button-active',
+						slideActiveClass: 'slide-active'
 					});
 			});
 		</script>
@@ -36,8 +32,12 @@
 				-webkit-flex-shrink: 0;
 				flex-shrink: 0;
 			}
-			.gallery-tray img.active {
+			.gallery-tray img.slide-active {
 				opacity: 1;
+			}
+			.button-active {
+				background: black;
+				color: white;
 			}
 		</style>
 	</head>
@@ -69,7 +69,8 @@
 		<button data-carro="8">8</button>
 		<button data-carro="9">9</button>
 		<br>
-		<button data-carro="-1">-1</button>
-		<button data-carro="+1">+1</button>
+		<button data-carro="+ 1">+1</button>
+		<button data-carro="- 1">-1</button>
+		<button data-carro="-1">Go to last</button>
 	</body>
 </html>

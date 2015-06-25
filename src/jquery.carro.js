@@ -14,6 +14,8 @@
         index: 0,
         interval: 5000,
         offset: 0,
+        slideActiveClass: '',
+        buttonActiveClass: '',
         slidesFilter: '*',
         trayFilter: '*'
     };
@@ -27,6 +29,8 @@
 
     Plugin.prototype = {
         init: function () {
+            var self = this;
+
             this.$element = $(this.element);
             this.$tray = this.$element.children(this.settings.trayFilter).first();
             this.$slides = this.$tray.children(this.settings.slidesFilter);
@@ -40,9 +44,14 @@
                 this.$slides.on('leave.' + pluginName, this.settings.leave);
             }
 
-            //Go to
-            this.index = this.settings.index || 0;
-            this['goto'](this.index);
+            if (this.settings.slideActiveClass) {
+                this.$slides.on('leave.' + pluginName, function () {
+                    $(this).removeClass(self.settings.slideActiveClass);
+                });
+                this.$slides.on('enter.' + pluginName, function () {
+                    $(this).addClass(self.settings.slideActiveClass);
+                });
+            }
 
             //Buttons
             if (this.settings.buttons) {
@@ -52,12 +61,25 @@
                     this.$buttons = $(this.settings.buttons);
                 }
 
-                var that = this;
                 this.$buttons.on('click.' + pluginName, function () {
-                    that['goto']($(this).attr('data-carro'));
+                    self['goto']($(this).attr('data-carro'));
                     return false;
                 });
+
+                if (this.settings.buttonActiveClass) {
+                    this.$slides.on('enter.' + pluginName, function () {
+                        self.$buttons.filter('[data-carro="' + $(this).index() + '"]').addClass(self.settings.buttonActiveClass);
+                    });
+
+                    this.$slides.on('leave.' + pluginName, function () {
+                        self.$buttons.filter('[data-carro="' + $(this).index() + '"]').removeClass(self.settings.buttonActiveClass);
+                    });
+                }
             }
+
+            //Go to
+            this.index = this.settings.index || 0;
+            this['goto'](this.index);
 
             //Autoplay
             if (this.settings.autoPlay) {
@@ -134,17 +156,17 @@
                 return this.$slides.eq(position);
             }
 
-            if (/^[0-9]+$/.test(position)) {
+            if (/^(\+|-)?[0-9]+$/.test(position)) {
                 return this.$slides.eq(parseInt(position, 10));
             }
 
-            if (/^\+[0-9]+$/.test(position)) {
+            if (/^\+\s+[0-9]+$/.test(position)) {
                 position = this.index + (parseInt(position.substr(1), 10));
 
                 return this.$slides.eq(position);
             }
 
-            if (/^\-[0-9]+$/.test(position)) {
+            if (/^\-\s+[0-9]+$/.test(position)) {
                 position = this.index - (parseInt(position.substr(1), 10));
 
                 return this.$slides.eq(position);

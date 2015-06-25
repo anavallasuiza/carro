@@ -90,86 +90,17 @@ Carro is a jquery plugin to create a chromeless css-based carousel with any html
 
 ### Available options:
 
-
-<table>
-    <thead>
-      <tr>
-        <th>Variable</th>
-        <th>Default Value</th>
-        <th>Description</th>
-        <th>Valid Options</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td>autoplay</td>
-        <td>false</td>
-        <td>Whether or not the carousel plays automatically</td>
-        <td>boolean</td>
-      </tr>
-
-      <tr>
-        <td>buttons</td>
-        <td>""</td>
-        <td>The html elements to interact with the slides. They must have the `data-carro` property with the slide number or a "+n" or "-n" for relative slide.</td>
-        <td>string, html element, jquery object</td>
-      </tr>
-
-      <tr>
-        <td>fitToLimits</td>
-        <td>false</td>
-        <td>Set true to limit the tray to the window limits</td>
-        <td>boolean</td>
-      </tr>
-
-      <tr>
-        <td>index</td>
-        <td>0</td>
-        <td>The initial slide visible</td>
-        <td>integer</td>
-      </tr>
-
-      <tr>
-        <td>interval</td>
-        <td>5000</td>
-        <td>The interval duration on play in miliseconds</td>
-        <td>integer</td>
-      </tr>
-
-      <tr>
-        <td>offset</td>
-        <td>0</td>
-        <td>Horizontal offset position of the tray with all slides in pixels. It can ben also "center" to center the current slide in the window</td>
-        <td>integer or "center"</td>
-      </tr>
-
-      <tr>
-        <td>trayFilter</td>
-        <td>*</td>
-        <td>The selector to filter the children of the main element converted to the tray</td>
-        <td>string</td>
-      </tr>
-
-      <tr>
-        <td>slidesFilter</td>
-        <td>*</td>
-        <td>The selector to filter the children of the tray that will be the slides</td>
-        <td>string</td>
-      </tr>
-
-      <tr>
-        <td>enter</td>
-        <td></td>
-        <td>Callback used on enter in a slide</td>
-        <td>function</td>
-      </tr>
-
-      <tr>
-        <td>leave</td>
-        <td></td>
-        <td>Callback used on leave a slide</td>
-        <td>function</td>
-      </tr>
-    </tbody>
-  </table>
+Variable | Default Value | Description | Valid Options
+---------|---------------|-------------|--------------
+autoplay | `false` | Whether or not the carousel plays automatically | boolean
+buttons  | `""` | The buttons to interact with the slides. They must have the `data-carro` property with the slide number or a "+ n" or "- n" for relative slide (note the space after "+" and "-"). | string, html element, jquery object
+fitToLimits  | `false` | Set true to limit the tray to the window limits | boolean
+index  | `0` | The initial slide visible (0 based) | integer
+interval  | `5000` | The interval duration between two slides on play (in miliseconds) | integer
+offset  | `0` | Horizontal offset of the tray position in pixels. It can ben also "center" to center the current slide in the window | integer or "center"
+trayFilter  | `"*"` | The selector used to filter the element choosen as tray | string
+slidesFilter  | `"*"` | The selector used to filter the element choosen as slides | string
+enter  | `undefined` | Callback used on enter in a slide. Use `this` to get the slide element. | function
+leave  | `undefined` | Callback used on leave a slide. Use `this` to get the slide element. | function
+slideActiveClass  | `""` | An optional class added to the active slide | string
+buttonActiveClass  | `""` | An optional class added to the active button | string
