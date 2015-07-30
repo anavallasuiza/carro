@@ -1,7 +1,7 @@
 {
     "name": "carro",
     "main": "src/jquery.carro.js",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "homepage": "https://github.com/MiniPlugins/carro",
     "description": "Cromeless, css-based carousel",
     "dependencies": {

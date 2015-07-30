@@ -93,7 +93,7 @@ Carro is a jquery plugin to create a chromeless css-based carousel with any html
 Variable | Default Value | Description | Valid Options
 ---------|---------------|-------------|--------------
 autoplay | `false` | Whether or not the carousel plays automatically | boolean
-buttons  | `""` | The buttons to interact with the slides. They must have the `data-carro` property with the slide number or a "+ n" or "- n" for relative slide (note the space after "+" and "-"). | string, html element, jquery object
+buttons  | `""` | The buttons to interact with the slides. They must have the `data-carro` property with the slide number or a "+n" or "-n" for relative slide. | string, html element, jquery object
 fitToLimits  | `false` | Set true to limit the tray to the window limits | boolean
 index  | `0` | The initial slide visible (0 based) | integer
 interval  | `5000` | The interval duration between two slides on play (in miliseconds) | integer

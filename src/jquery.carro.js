@@ -137,7 +137,7 @@
 
         getSlide: function (position) {
             if (position === undefined || position === 'current') {
-                return this.$slides.eq(this.index);
+                return this._eq(this.index);
             }
 
             if (typeof position === "object" && position.jquery && position.parent().is(this.$tray)) {
@@ -153,24 +153,36 @@
             }
 
             if (typeof position === 'number') {
-                return this.$slides.eq(position);
+                return this._eq(position);
             }
 
-            if (/^(\+|-)?[0-9]+$/.test(position)) {
-                return this.$slides.eq(parseInt(position, 10));
+            if (/^[0-9]+$/.test(position)) {
+                return this._eq(parseInt(position));
             }
 
-            if (/^\+\s+[0-9]+$/.test(position)) {
+            if (/^\+[0-9]+$/.test(position)) {
                 position = this.index + (parseInt(position.substr(1), 10));
 
-                return this.$slides.eq(position);
+                return this._eq(position);
             }
 
-            if (/^\-\s+[0-9]+$/.test(position)) {
+            if (/^\-[0-9]+$/.test(position)) {
                 position = this.index - (parseInt(position.substr(1), 10));
 
-                return this.$slides.eq(position);
+                return this._eq(position);
             }
+        },
+
+        _eq: function (position) {
+            if (position < 0) {
+                return this.$slides.first();
+            }
+
+            if (position >= this.$slides.length) {
+                return this.$slides.last();
+            }
+
+            return this.$slides.eq(position);
         },
 
         play: function () {
