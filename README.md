@@ -94,13 +94,14 @@ Variable | Default Value | Description | Valid Options
 ---------|---------------|-------------|--------------
 autoplay | `false` | Whether or not the carousel plays automatically | boolean
 buttons  | `""` | The buttons to interact with the slides. They must have the `data-carro` property with the slide number or a "+n" or "-n" for relative slide. | string, html element, jquery object
+buttonActiveClass  | `""` | An optional class added to the active button | string
+enter  | `undefined` | Callback used on enter in a slide. Use `this` to get the slide element. | function
 fitToLimits  | `false` | Set true to limit the tray to the window limits | boolean
+fluid  | `false` | Set true to move the trait in a fuild way, instead slide by slide. This option ony has effects combined with `fitToLimits` | boolean
 index  | `0` | The initial slide visible (0 based) | integer
 interval  | `5000` | The interval duration between two slides on play (in miliseconds) | integer
-offset  | `0` | Horizontal offset of the tray position in pixels. It can ben also "center" to center the current slide in the window | integer or "center"
-trayFilter  | `"*"` | The selector used to filter the element choosen as tray | string
-slidesFilter  | `"*"` | The selector used to filter the element choosen as slides | string
-enter  | `undefined` | Callback used on enter in a slide. Use `this` to get the slide element. | function
 leave  | `undefined` | Callback used on leave a slide. Use `this` to get the slide element. | function
+offset  | `0` | Horizontal offset of the tray position in pixels. It can ben also "center" to center the current slide in the window | integer or "center"
 slideActiveClass  | `""` | An optional class added to the active slide | string
-buttonActiveClass  | `""` | An optional class added to the active button | string
+slidesFilter  | `"*"` | The selector used to filter the element choosen as slides | string
+trayFilter  | `"*"` | The selector used to filter the element choosen as tray | string

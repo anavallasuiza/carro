@@ -11,6 +11,7 @@
         autoPlay: false,
         buttons: '',
         fitToLimits: false,
+        fluid: false,
         index: 0,
         interval: 5000,
         offset: 0,
@@ -94,7 +95,6 @@
             if ($target && $target.length) {
                 this.getSlide('current').trigger('leave');
 
-                this.index = $target.index();               
                 var x = 0;
 
                 $target.prevAll().each(function () {
@@ -116,13 +116,19 @@
                         lastx -= $(this).outerWidth(true);
                     });
 
-                    if (x < lastx) {
-                        x = lastx;
+                    if (!this.settings.fluid) {
+                        this.index = $target.index();
                     }
 
-                    if (x > 0) {
+                    if (x < lastx) {
+                        x = lastx;
+                    } else if (x > 0) {
                         x = 0;
+                    } else {
+                        this.index = $target.index();
                     }
+                } else {
+                    this.index = $target.index();
                 }
 
                 $target.trigger('enter');
