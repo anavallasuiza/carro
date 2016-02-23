@@ -1,27 +1,30 @@
-(function (factory) {
+(function(factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('jquery'));
     } else {
         // Browser globals
         factory(jQuery);
     }
-}(function ($) {
-    var pluginName = "carro", defaults = {
-        autoPlay: false,
-        buttons: '',
-        fitToLimits: false,
-        fluid: false,
-        index: 0,
-        interval: 5000,
-        offset: 0,
-        slideActiveClass: '',
-        buttonActiveClass: '',
-        slidesFilter: '*',
-        trayFilter: '*'
-    };
+}(function($) {
+    var pluginName = 'carro',
+        defaults = {
+            autoPlay: false,
+            buttons: '',
+            fitToLimits: false,
+            fluid: false,
+            index: 0,
+            interval: 5000,
+            offset: 0,
+            slideActiveClass: '',
+            buttonActiveClass: '',
+            slidesFilter: '*',
+            trayFilter: '*'
+        };
 
-    function Plugin (element, options) {
+    function Plugin(element, options) {
         this.element = element;
         this.settings = $.extend({}, defaults, options);
 
@@ -29,7 +32,7 @@
     }
 
     Plugin.prototype = {
-        init: function () {
+        init: function() {
             var self = this;
 
             this.$element = $(this.element);
@@ -46,10 +49,10 @@
             }
 
             if (this.settings.slideActiveClass) {
-                this.$slides.on('leave.' + pluginName, function () {
+                this.$slides.on('leave.' + pluginName, function() {
                     $(this).removeClass(self.settings.slideActiveClass);
                 });
-                this.$slides.on('enter.' + pluginName, function () {
+                this.$slides.on('enter.' + pluginName, function() {
                     $(this).addClass(self.settings.slideActiveClass);
                 });
             }
@@ -62,17 +65,17 @@
                     this.$buttons = $(this.settings.buttons);
                 }
 
-                this.$buttons.on('click.' + pluginName, function () {
+                this.$buttons.on('click.' + pluginName, function() {
                     self['goto']($(this).attr('data-carro'));
                     return false;
                 });
 
                 if (this.settings.buttonActiveClass) {
-                    this.$slides.on('enter.' + pluginName, function () {
+                    this.$slides.on('enter.' + pluginName, function() {
                         self.$buttons.filter('[data-carro="' + $(this).index() + '"]').addClass(self.settings.buttonActiveClass);
                     });
 
-                    this.$slides.on('leave.' + pluginName, function () {
+                    this.$slides.on('leave.' + pluginName, function() {
                         self.$buttons.filter('[data-carro="' + $(this).index() + '"]').removeClass(self.settings.buttonActiveClass);
                     });
                 }
@@ -88,8 +91,7 @@
             }
         },
 
-        goto: function (position) {
-            var that = this;
+        goto: function(position) {
             var $target = this.getSlide(position);
 
             if ($target && $target.length) {
@@ -97,7 +99,7 @@
 
                 var x = 0;
 
-                $target.prevAll().each(function () {
+                $target.prevAll().each(function() {
                     x -= $(this).outerWidth(true);
                 });
 
@@ -112,7 +114,7 @@
                 if (this.settings.fitToLimits) {
                     var lastx = this.$element.width();
 
-                    this.getSlide('last').prevAll().addBack().each(function () {
+                    this.getSlide('last').prevAll().addBack().each(function() {
                         lastx -= $(this).outerWidth(true);
                     });
 
@@ -137,16 +139,16 @@
             }
         },
 
-        getSlides: function () {
+        getSlides: function() {
             return this.$slides;
         },
 
-        getSlide: function (position) {
+        getSlide: function(position) {
             if (position === undefined || position === 'current') {
                 return this._eq(this.index);
             }
 
-            if (typeof position === "object" && position.jquery && position.parent().is(this.$tray)) {
+            if (typeof position === 'object' && position.jquery && position.parent().is(this.$tray)) {
                 return position;
             }
 
@@ -179,7 +181,7 @@
             }
         },
 
-        _eq: function (position) {
+        _eq: function(position) {
             if (position < 0) {
                 return this.$slides.first();
             }
@@ -191,11 +193,11 @@
             return this.$slides.eq(position);
         },
 
-        play: function () {
+        play: function() {
             var that = this,
                 index = '+1';
 
-            var interval = function () {
+            var interval = function() {
                 if (that.getSlide('last').index() === that.index) {
                     index = '-1';
                 } else if (that.index === 0) {
@@ -205,16 +207,16 @@
                 that['goto'](index);
 
                 that.timeout = setTimeout(interval, that.settings.interval);
-            }
+            };
 
             this.timeout = setTimeout(interval, this.settings.interval);
         },
 
-        stop: function () {
+        stop: function() {
             clearTimeout(this.timeout);
         },
 
-        destroy: function () {
+        destroy: function() {
             this.$slides.off('.' + pluginName);
 
             if (this.$buttons) {
@@ -223,11 +225,11 @@
         }
     };
 
-    $.fn[pluginName] = function (options) {
+    $.fn[pluginName] = function(options) {
         if ((options === undefined) || (typeof options === 'object')) {
-            return this.each(function () {
-                if (!$.data(this, "plugin_" + pluginName)) {
-                    $.data(this, "plugin_" + pluginName, new Plugin(this, options));
+            return this.each(function() {
+                if (!$.data(this, 'plugin_' + pluginName)) {
+                    $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
                 }
             });
         }
@@ -235,7 +237,7 @@
         if ((typeof options === 'string') && (options[0] !== '_') && (options !== 'init')) {
             var returns, args = arguments;
 
-            this.each(function () {
+            this.each(function() {
                 var instance = $.data(this, 'plugin_' + pluginName);
 
                 if ((instance instanceof Plugin) && (typeof instance[options] === 'function')) {
@@ -243,7 +245,7 @@
                 }
 
                 if (options === 'destroy') {
-                  $.data(this, 'plugin_' + pluginName, null);
+                    $.data(this, 'plugin_' + pluginName, null);
                 }
             });
 
