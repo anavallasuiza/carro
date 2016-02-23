@@ -57,6 +57,46 @@
                 });
             }
 
+            var threshold = 200,
+                startX;
+
+            this.$element
+                .on('touchstart', function(e) {
+                    startX = e.originalEvent.touches[0].clientX;
+                })
+                .on('touchmove', function(e) {
+                    var o = e.originalEvent;
+
+                    if (o.touches.length > 1) {
+                        return;
+                    }
+
+                    var delta = startX - o.touches[0].clientX;
+
+                    if (delta < 0) {
+                        if (delta < -threshold) {
+                            self.goto('-1');
+                        }
+                    } else {
+                        if (delta > threshold) {
+                            self.goto('+1');
+                        }
+                    }
+
+                    e.preventDefault();
+                })
+                .on('wheel', function(e) {
+                    var o = e.originalEvent;
+                    e.preventDefault();
+                    if (o.deltaX === 1) {
+                        self.goto('+1');
+                    }
+
+                    if (o.deltaX === -1) {
+                        self.goto('-1');
+                    }
+                });
+
             //Buttons
             if (this.settings.buttons) {
                 if ($.isFunction(this.settings.buttons)) {
