@@ -122,10 +122,10 @@
                         this.index = $target.index();
                     }
 
-                    if (x < lastx) {
-                        x = lastx;
-                    } else if (x > 0) {
+                    if (x > 0) {
                         x = 0;
+                    } else if (x < lastx) {
+                        x = lastx;
                     } else {
                         this.index = $target.index();
                     }
