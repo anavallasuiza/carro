@@ -25,6 +25,8 @@
         };
 
     function Plugin(element, options) {
+        this.timeout = null;
+        this.playing = false;
         this.element = element;
         this.settings = $.extend({}, defaults, options);
 
@@ -136,6 +138,11 @@
                 $target.trigger('enter');
 
                 this.$tray.css('transform', 'translateX(' + x + 'px)');
+
+                if (this.playing) {
+                    this.stop();
+                    this.play();
+                }
             }
         },
 
@@ -197,7 +204,7 @@
             var that = this,
                 index = '+1';
 
-            var interval = function() {
+            var go = function() {
                 if (that.getSlide('last').index() === that.index) {
                     index = '-1';
                 } else if (that.index === 0) {
@@ -205,15 +212,15 @@
                 }
 
                 that['goto'](index);
-
-                that.timeout = setTimeout(interval, that.settings.interval);
             };
 
-            this.timeout = setTimeout(interval, this.settings.interval);
+            this.playing = true;
+            this.timeout = setTimeout(go, this.settings.interval);
         },
 
         stop: function() {
             clearTimeout(this.timeout);
+            this.playing = false;
         },
 
         destroy: function() {
