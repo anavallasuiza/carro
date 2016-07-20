@@ -27,6 +27,7 @@
     function Plugin(element, options) {
         this.timeout = null;
         this.playing = false;
+        this.direction = '+1';
         this.element = element;
         this.settings = $.extend({}, defaults, options);
 
@@ -201,17 +202,16 @@
         },
 
         play: function() {
-            var that = this,
-                index = '+1';
+            var that = this;
 
             var go = function() {
                 if (that.getSlide('last').index() === that.index) {
-                    index = '-1';
+                    that.direction = '-1';
                 } else if (that.index === 0) {
-                    index = '+1';
+                    that.direction = '+1';
                 }
 
-                that['goto'](index);
+                that['goto'](that.direction);
             };
 
             this.playing = true;
