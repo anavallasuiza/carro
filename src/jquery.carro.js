@@ -127,7 +127,7 @@
 
                     if (x > 0) {
                         x = 0;
-                    } else if (x < lastx) {
+                    } else if (lastx < 0 && x < lastx) {
                         x = lastx;
                     } else {
                         this.index = $target.index();
